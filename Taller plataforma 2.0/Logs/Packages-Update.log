@@ -50,3 +50,15 @@ The following packages were updated:
   com.unity.test-framework from version 1.4.2 to 1.6.0
   com.unity.timeline from version 1.8.6 to 1.8.13
   com.unity.visualscripting from version 1.9.1 to 1.9.12
+
+=== Thu Oct 22 08:55:27 2026
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were added:
+  com.unity.2d.sprite@1.0.0
+  com.unity.2d.tilemap@1.0.0
+  com.unity.analytics@3.8.2
+  com.unity.purchasing@4.15.1
+  com.unity.xr.legacyinputhelpers@2.1.13
