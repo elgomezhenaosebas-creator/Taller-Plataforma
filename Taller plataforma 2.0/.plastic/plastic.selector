@@ -1,4 +1,0 @@
-repository "Taller plataforma 2.0 2026-10-22_08-37-52/Taller plataforma 2.0@4674232463076@cloud"
-  path "/"
-    br "/main"
-    co "/main"
