@@ -2,81 +2,122 @@ using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody2D))]
+public class MovimientoJugador : MonoBehaviour
 {
-    public float walkSpeed;
-    private float moveInput;
-    public bool isGrounded;
-    private Rigidbody2D rb;
-    public LayerMask groundMask;
+    [Header("Movimiento")]
+    [SerializeField] private float _velocidad = 6f;
+    [SerializeField] private float _gravedad = 3f;
 
-    public PhysicsMaterial2D bounceMat, normalMat; 
-    public bool canJump = true;
-    public float jumpValue = 0.0f;
+    [Header("Salto")]
+    [SerializeField] private float _saltoMin = 9f;
+    [SerializeField] private float _saltoMax = 17f;
+    [SerializeField] private float _tiempoCarga = 1f;
+    [SerializeField] private float _empujeHorizontal = 4f;
 
-    void Start()
+    [Header("Rebote en paredes")]
+    [SerializeField] private float _rebote = 0.6f;
+
+    private Rigidbody2D _rb;
+    private DetectorSuelo _detector;
+    private Animator _anim;
+    private SpriteRenderer _sprite;
+
+    private float _horizontal;
+    private float _carga;
+    private bool _cargando;
+    private bool _lanzar;
+    private float _fuerzaPendiente;
+    private float _dirPendiente;
+    private float _bloqueoSuelo;
+    private Vector2 _velPrevia;
+
+    private bool EnSuelo => _detector != null && _detector.estaEnSuelo && _bloqueoSuelo <= 0f;
+
+    private void Awake()
     {
-        rb = gameObject.GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody2D>();
+        _rb.gravityScale = _gravedad;
+        _detector = GetComponentInChildren<DetectorSuelo>();
+        _anim = GetComponentInChildren<Animator>();
+        _sprite = GetComponentInChildren<SpriteRenderer>();
     }
 
-    void Update()
+    private void Update()
     {
-        moveInput = Input.GetAxisRaw("Horizontal");
+        _bloqueoSuelo -= Time.deltaTime;
 
-        if (jumpValue == 0.0f && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(moveInput * walkSpeed, rb.linearVelocity.y);
-        }
-        isGrounded = Physics2D.OverlapBox(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - 0.5f),
-            new Vector2(0.9f, 0.4f), 0f, groundMask);
+        _horizontal = 0f;
+        if (Input.GetKey(KeyCode.A)) _horizontal -= 1f;
+        if (Input.GetKey(KeyCode.D)) _horizontal += 1f;
 
-        if(jumpValue > 0)
-        {
-            rb.sharedMaterial = bounceMat;
-        }else
-        {
-            rb.sharedMaterial = normalMat;
-        }
-         
-        if (Input.GetKey("space") && isGrounded && canJump)
-        {
-            jumpValue += 0.1f;
-        }
+        bool enSuelo = EnSuelo;
 
-        if (jumpValue >= 20f && isGrounded)
+        if (enSuelo)
         {
-            float tempx = moveInput * walkSpeed;
-            float tempy = jumpValue;
-            rb.linearVelocity = new Vector2(tempx, tempy);
-            Invoke("ResetJump", 0.2f);
-        }
-
-        if(Input.GetKeyDown("space") && isGrounded && canJump)
-        {
-            rb.linearVelocity = new Vector2(0.0f, rb.linearVelocity.y);
-        }
-
-        if(Input.GetKey("space"))
-        {
-            if(isGrounded)
+            if (Input.GetKey(KeyCode.Space))
             {
-               rb.linearVelocity = new Vector2(moveInput * walkSpeed, jumpValue);
-               jumpValue = 0.0f;
+                _cargando = true;
+                _carga = Mathf.Min(_carga + Time.deltaTime, _tiempoCarga);
             }
-            canJump = true;
+
+            if (_cargando && (Input.GetKeyUp(KeyCode.Space) || _carga >= _tiempoCarga))
+            {
+                _fuerzaPendiente = Mathf.Lerp(_saltoMin, _saltoMax, _carga / _tiempoCarga);
+                _dirPendiente = _horizontal;
+                _lanzar = true;
+                _cargando = false;
+                _carga = 0f;
+            }
+
+            if (!_cargando && _horizontal != 0f)
+                _sprite.flipX = _horizontal < 0f;
+        }
+        else
+        {
+            _cargando = false;
+            _carga = 0f;
         }
 
+        _anim.SetBool("corriendo", enSuelo && !_cargando && _horizontal != 0f);
+        _anim.SetBool("enSuelo", enSuelo);
+    }
 
-        void ResetJump()
+    private void FixedUpdate()
+    {
+        _velPrevia = _rb.linearVelocity;
+
+        if (_lanzar)
         {
-            canJump = false;
-            jumpValue = 0;
+            _rb.linearVelocity = new Vector2(_dirPendiente * _empujeHorizontal, _fuerzaPendiente);
+            _lanzar = false;
+            _bloqueoSuelo = 0.15f;
+            return;
         }
 
-        void OnDrawGizmosSelected()
+        if (EnSuelo)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawCube(new Vector2(gameObject.transform.position.x, gameObject.transform.position.y - 0.5f), new Vector2(0.9f, 0.2f));
+            Vector2 v = _rb.linearVelocity;
+            v.x = _cargando ? 0f : _horizontal * _velocidad;
+            _rb.linearVelocity = v;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (EnSuelo || Mathf.Abs(_velPrevia.x) < 0.5f) return;
+
+        foreach (ContactPoint2D c in col.contacts)
+        {
+            if (Mathf.Abs(c.normal.x) > 0.7f)
+            {
+                float nuevaX = -_velPrevia.x * _rebote;
+                _rb.linearVelocity = new Vector2(nuevaX, _rb.linearVelocity.y);
+                _sprite.flipX = nuevaX < 0f;
+                break;
+            }
         }
     }
 }
