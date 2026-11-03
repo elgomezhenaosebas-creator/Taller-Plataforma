@@ -62,4 +62,12 @@ public class SaludJugador : MonoBehaviour
         if (vida <= 0f)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+    public bool Curar(float cantidad)
+    {
+        if (vida >= _vidaMax) return false;
+
+        vida = Mathf.Min(_vidaMax, vida + cantidad);
+        Debug.Log("Curado: " + cantidad.ToString("F0") + " | Vida: " + vida.ToString("F0"));
+        return true;
+    }
 }
