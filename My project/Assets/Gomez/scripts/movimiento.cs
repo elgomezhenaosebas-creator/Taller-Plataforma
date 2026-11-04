@@ -16,6 +16,11 @@ public class MovimientoJugador : MonoBehaviour
     [Header("Rebote en paredes")]
     [SerializeField] private float _rebote = 0.6f;
 
+    [Header("Sonidos")]
+    [SerializeField] private float _intervaloPaso = 0.3f;
+    [SerializeField] private float _velocidadCaidaMin = 8f;
+
+    private PlayerSoundController _sonido;
     private Rigidbody2D _rb;
     private DetectorSuelo _detector;
     private Animator _anim;
@@ -30,6 +35,11 @@ public class MovimientoJugador : MonoBehaviour
     private float _bloqueoSuelo;
     private Vector2 _velPrevia;
 
+    private bool _estabaEnSuelo;
+    private float _velCaidaMax;
+    private float _tempoPaso;
+    private bool _pasoAlterno;
+
     private bool EnSuelo => _detector != null && _detector.estaEnSuelo && _bloqueoSuelo <= 0f;
 
     private void Awake()
@@ -39,6 +49,7 @@ public class MovimientoJugador : MonoBehaviour
         _detector = GetComponentInChildren<DetectorSuelo>();
         _anim = GetComponentInChildren<Animator>();
         _sprite = GetComponentInChildren<SpriteRenderer>();
+        _sonido = GetComponent<PlayerSoundController>();
     }
 
     private void Update()
@@ -50,6 +61,17 @@ public class MovimientoJugador : MonoBehaviour
         if (Input.GetKey(KeyCode.D)) _horizontal += 1f;
 
         bool enSuelo = EnSuelo;
+
+        // Sonido de caída al aterrizar
+        if (enSuelo && !_estabaEnSuelo && _velCaidaMax < -_velocidadCaidaMin)
+        {
+            if (_sonido != null) _sonido.playsonidoCaida();
+        }
+
+        if (enSuelo) _velCaidaMax = 0f;
+        else _velCaidaMax = Mathf.Min(_velCaidaMax, _rb.linearVelocity.y);
+
+        _estabaEnSuelo = enSuelo;
 
         if (enSuelo)
         {
@@ -66,6 +88,8 @@ public class MovimientoJugador : MonoBehaviour
                 _lanzar = true;
                 _cargando = false;
                 _carga = 0f;
+
+                if (_sonido != null) _sonido.playSaltar();
             }
 
             if (!_cargando && _horizontal != 0f)
@@ -77,7 +101,29 @@ public class MovimientoJugador : MonoBehaviour
             _carga = 0f;
         }
 
-        _anim.SetBool("corriendo", enSuelo && !_cargando && _horizontal != 0f);
+        bool caminando = enSuelo && !_cargando && _horizontal != 0f;
+
+        // Pasos alternando sonido 1 y 2
+        if (caminando)
+        {
+            _tempoPaso -= Time.deltaTime;
+            if (_tempoPaso <= 0f)
+            {
+                _tempoPaso = _intervaloPaso;
+                if (_sonido != null)
+                {
+                    if (_pasoAlterno) _sonido.playsonidoMov2();
+                    else _sonido.playsonidoMov1();
+                }
+                _pasoAlterno = !_pasoAlterno;
+            }
+        }
+        else
+        {
+            _tempoPaso = 0f;
+        }
+
+        _anim.SetBool("corriendo", caminando);
         _anim.SetBool("enSuelo", enSuelo);
     }
 
