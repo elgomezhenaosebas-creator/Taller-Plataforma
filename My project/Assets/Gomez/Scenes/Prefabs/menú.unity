@@ -397,6 +397,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1525754841275519891, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
   m_PrefabInstance: {fileID: 2062651551465418465}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1711344379 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1314906299516751215, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
+  m_PrefabInstance: {fileID: 2062651551465418465}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 006b4ea4a0480e546847e068ab2b2965, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuSystem
 --- !u!1 &1878768265
 GameObject:
   m_ObjectHideFlags: 0
@@ -669,6 +680,26 @@ PrefabInstance:
     - target: {fileID: 2948452008988075835, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550434370221839245, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550434370221839245, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1711344379}
+    - target: {fileID: 5550434370221839245, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Salir
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550434370221839245, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MenuSystem, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5550434370221839245, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5700214046316957730, guid: 52b8a4b5b93cabe4d86ee3e2961229a2, type: 3}
       propertyPath: m_AnchorMax.x
