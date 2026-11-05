@@ -9,7 +9,7 @@ public class PlayerSoundController : MonoBehaviour
     public AudioClip sonidoMov1;
     public AudioClip sonidoMov2;
     public AudioClip sonidoDerrota;
-
+    public AudioClip sonidoVictoria;
 
 
     public void playSaltar()
@@ -51,7 +51,10 @@ public class PlayerSoundController : MonoBehaviour
 
 
 
-
+    public void playsonidoVictoria()
+    {
+        audioSource.PlayOneShot(sonidoVictoria);
+    }
 
 
 

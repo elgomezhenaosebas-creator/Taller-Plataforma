@@ -8,17 +8,26 @@ public class Temporizador : MonoBehaviour
 
     [SerializeField] private TMP_Text _texto;
 
+    private static int _ultimoFrame = -1;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reiniciar()
     {
         Tiempo = 0f;
         Corriendo = true;
+        _ultimoFrame = -1;
     }
 
     private void Update()
     {
-        if (Corriendo) Tiempo += Time.deltaTime;
-        _texto.text = Formato(Tiempo);
+        if (Corriendo && _ultimoFrame != Time.frameCount)
+        {
+            _ultimoFrame = Time.frameCount;
+            Tiempo += Time.deltaTime;
+        }
+
+        if (_texto != null)
+            _texto.text = Formato(Tiempo);
     }
 
     public static string Formato(float t)

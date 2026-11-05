@@ -108,7 +108,10 @@ public class SaludJugador : MonoBehaviour
         if (mov != null) mov.enabled = false;
 
         yield return new WaitForSeconds(_esperaDerrota);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        PanelDerrota panel = FindFirstObjectByType<PanelDerrota>();
+        if (panel != null) panel.Mostrar();
+        else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public bool Curar(float cantidad)

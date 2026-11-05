@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: "Assets/Gomez/Scenes/men\xFA.unity"
+    path: "Assets/Gomez/Scenes/Prefabs/men\xFA.unity"
     guid: 06dd952afa2e7ed478cbe3c4df838c48
   - enabled: 1
     path: Assets/Gomez/Scenes/SampleScene.unity

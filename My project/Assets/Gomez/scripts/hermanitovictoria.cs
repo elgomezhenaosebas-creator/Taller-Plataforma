@@ -21,6 +21,8 @@ public class Victoria : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("Victoria: toca " + other.name);
+
         if (_gano) return;
 
         MovimientoJugador mov = other.GetComponentInParent<MovimientoJugador>();
@@ -30,6 +32,9 @@ public class Victoria : MonoBehaviour
         Temporizador.Corriendo = false;
         mov.enabled = false;
         mov.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+
+        PlayerSoundController sonido = mov.GetComponent<PlayerSoundController>();
+        if (sonido != null) sonido.playsonidoVictoria();
 
         _panel.SetActive(true);
         _textoTiempo.text = "Tiempo: " + Temporizador.Formato(Temporizador.Tiempo);
