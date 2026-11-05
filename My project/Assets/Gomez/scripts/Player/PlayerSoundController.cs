@@ -10,7 +10,7 @@ public class PlayerSoundController : MonoBehaviour
     public AudioClip sonidoMov2;
     public AudioClip sonidoDerrota;
     public AudioClip sonidoVictoria;
-
+    public AudioClip sonidopocionRecogida;
 
     public void playSaltar()
     {
@@ -58,7 +58,10 @@ public class PlayerSoundController : MonoBehaviour
 
 
 
-
+    public void playsonidopocionRecogida()
+    {
+        audioSource.PlayOneShot(sonidopocionRecogida);
+    }
 
 
 

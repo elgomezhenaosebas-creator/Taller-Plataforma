@@ -6,6 +6,7 @@ public class Victoria : MonoBehaviour
 {
     [SerializeField] private GameObject _panel;
     [SerializeField] private TMP_Text _textoTiempo;
+    [SerializeField] private GameObject _avisoPociones;
 
     private bool _gano;
 
@@ -28,6 +29,13 @@ public class Victoria : MonoBehaviour
         MovimientoJugador mov = other.GetComponentInParent<MovimientoJugador>();
         if (mov == null) return;
 
+        // Si faltan pociones, avisa y no deja ganar
+        if (!GestorPociones.instancia.TodasRecogidas())
+        {
+            MostrarAviso();
+            return;
+        }
+
         _gano = true;
         Temporizador.Corriendo = false;
         mov.enabled = false;
@@ -38,5 +46,19 @@ public class Victoria : MonoBehaviour
 
         _panel.SetActive(true);
         _textoTiempo.text = "Tiempo: " + Temporizador.Formato(Temporizador.Tiempo);
+    }
+
+    private void MostrarAviso()
+    {
+        if (_avisoPociones == null) return;
+
+        _avisoPociones.SetActive(true);
+        CancelInvoke(nameof(OcultarAviso));
+        Invoke(nameof(OcultarAviso), 2f);
+    }
+
+    private void OcultarAviso()
+    {
+        _avisoPociones.SetActive(false);
     }
 }
